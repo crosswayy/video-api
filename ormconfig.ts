@@ -1,6 +1,9 @@
-import { ConnectionOptions } from 'typeorm';
+import { TypeOrmModuleOptions } from '@nestjs/typeorm';
+import * as dotenv from 'dotenv';
 
-export const config: ConnectionOptions = {
+dotenv.config();
+
+export = {
   type: 'postgres',
   host: process.env.POSTGRES_HOST,
   port: parseInt(<string>process.env.POSTGRES_PORT),
@@ -8,12 +11,10 @@ export const config: ConnectionOptions = {
   password: process.env.POSTGRES_PASSWORD,
   database: process.env.POSTGRES_DB,
   synchronize: false,
-  entities: ['src/entities/**/*{.js,.ts}'],
+  entities: ['dist/**/*.entity{.js,.ts}'],
   migrations: ['src/migrations/**/*{.js,.ts}'],
   cli: {
     entitiesDir: 'src/entities',
     migrationsDir: 'src/database/migrations',
   },
-};
-
-module.exports = config;
+} as TypeOrmModuleOptions;

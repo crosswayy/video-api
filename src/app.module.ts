@@ -4,7 +4,7 @@ import { UserModule } from './user/user.module';
 import { VideoModule } from './video/video.module';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { config } from '../ormconfig';
+import ormconfig = require('../ormconfig');
 
 @Module({
   imports: [
@@ -13,7 +13,7 @@ import { config } from '../ormconfig';
     VideoModule,
     ConfigModule.forRoot({ isGlobal: true }),
     TypeOrmModule.forRoot({
-      ...config,
+      ...ormconfig,
       autoLoadEntities: true,
     }),
   ],
