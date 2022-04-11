@@ -2,7 +2,7 @@ import { ForbiddenException, Injectable } from '@nestjs/common';
 import { AuthDto } from './dto';
 import * as argon from 'argon2';
 import { InjectRepository } from '@nestjs/typeorm';
-import { UserEntity } from '../user/models/user.entity';
+import { UserEntity } from '../entities/user.entity';
 import { Repository, TypeORMError } from 'typeorm';
 
 @Injectable({})
