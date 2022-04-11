@@ -36,7 +36,17 @@ export class AuthService {
     }
   }
 
-  signin() {
-    return { msg: 'I am signed in' };
+  async signin(dto: AuthDto) {
+    // Find user by email
+    const user = await this.userRepository.findOne({ email: dto.email });
+    // if user does not exist throw exception
+    if (!user) throw new ForbiddenException('Credentials are incorrect');
+    // compare passwords
+    const pwMatches = await argon.verify(user.hash, dto.password);
+    // if password incorrect throw exception
+    if (!pwMatches) throw new ForbiddenException('Credentials are incorrect');
+    // send back user
+    delete user.hash;
+    return user;
   }
 }
