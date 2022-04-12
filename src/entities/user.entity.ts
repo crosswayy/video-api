@@ -16,7 +16,4 @@ export class UserEntity {
 
   @Column()
   hash: string;
-
-  @Column()
-  isActive: boolean;
 }
