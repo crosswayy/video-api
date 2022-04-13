@@ -1,11 +1,25 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import { UserEntity } from './user.entity';
 
 @Entity('video')
 export class VideoEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  @ManyToOne(() => UserEntity, (user) => user.videos)
+  @JoinColumn({
+    name: 'user_id',
+  })
+  user: UserEntity;
+
+  @CreateDateColumn()
   createdAt: Date;
 
   @Column()

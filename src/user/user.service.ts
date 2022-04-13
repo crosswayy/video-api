@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
+import * as argon from 'argon2';
 
 import { UserEntity } from '../entities/user.entity';
-import { IUser } from './models/user.interface';
-import { from, Observable } from 'rxjs';
+import { EditUserDto } from './dto';
 
 @Injectable()
 export class UserService {
@@ -13,11 +13,33 @@ export class UserService {
     private readonly userRepository: Repository<UserEntity>,
   ) {}
 
-  getUser(id: string): Observable<IUser> {
-    return from(this.userRepository.findOne({ id }));
-  }
+  async editUserInfo(userId: string, dto: EditUserDto) {
+    type UpdateInfo = {
+      hash?: string;
+      email?: string;
+    };
 
-  createUser(user: IUser): Observable<IUser> {
-    return from(this.userRepository.save(user));
+    const updateInfo: UpdateInfo = {};
+
+    if (dto.password) {
+      dto.password = await argon.hash(dto.password);
+      updateInfo.hash = dto.password;
+    }
+
+    if (dto.email) {
+      updateInfo.email = dto.email;
+    }
+
+    console.log(userId);
+    const updatedData = await this.userRepository
+      .createQueryBuilder()
+      .update(UserEntity)
+      .set({ ...updateInfo })
+      .where('id = :userId', { userId })
+      .returning(['id', 'email'])
+      .execute();
+
+    const user = updatedData.raw[0];
+    return user;
   }
 }

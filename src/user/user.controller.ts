@@ -1,20 +1,32 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
-import { Observable } from 'rxjs';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Param,
+  Patch,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 
 import { UserService } from './user.service';
-import { IUser } from './models/user.interface';
+import { GetCurrentUser, GetCurrentUserId } from '../auth/common/decorators';
+import { UserEntity } from '../entities/user.entity';
+import { EditUserDto } from './dto';
 
 @Controller('user')
 export class UserController {
   constructor(private userService: UserService) {}
 
-  @Get(':id')
-  get(@Param('id') id: string): Observable<IUser> {
-    return this.userService.getUser(id);
+  @HttpCode(HttpStatus.OK)
+  @Get('me')
+  getUserInfo(@GetCurrentUser() user: UserEntity) {
+    return user;
   }
 
-  @Post()
-  create(@Body() user: IUser): Observable<IUser> {
-    return this.userService.createUser(user);
+  @Patch('editData')
+  editUserInfo(@GetCurrentUserId() userId: string, @Body() dto: EditUserDto) {
+    return this.userService.editUserInfo(userId, dto);
   }
 }
