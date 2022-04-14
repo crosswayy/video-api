@@ -3,6 +3,8 @@ import {
   CreateDateColumn,
   Entity,
   JoinColumn,
+  JoinTable,
+  ManyToMany,
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
@@ -18,6 +20,20 @@ export class VideoEntity {
     name: 'user_id',
   })
   user: UserEntity;
+
+  @ManyToMany(() => UserEntity)
+  @JoinTable({
+    name: 'videos_users',
+    joinColumn: {
+      name: 'video',
+      referencedColumnName: 'id',
+    },
+    inverseJoinColumn: {
+      name: 'user',
+      referencedColumnName: 'id',
+    },
+  })
+  users: UserEntity[];
 
   @CreateDateColumn()
   createdAt: Date;

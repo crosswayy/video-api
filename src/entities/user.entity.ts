@@ -2,6 +2,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  ManyToMany,
   OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -21,6 +22,9 @@ export class UserEntity {
 
   @OneToMany(() => VideoEntity, (video) => video.user)
   videos: VideoEntity[];
+
+  @ManyToMany(() => VideoEntity)
+  sharedVideos: VideoEntity[];
 
   @Column({ unique: true })
   email: string;
