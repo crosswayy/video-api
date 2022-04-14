@@ -25,7 +25,7 @@ export class VideoEntity {
   @Column()
   title: string;
 
-  @Column()
+  @Column({ nullable: true })
   description: string;
 
   @Column()

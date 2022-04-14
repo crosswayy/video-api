@@ -4,10 +4,7 @@ import {
   Get,
   HttpCode,
   HttpStatus,
-  Param,
   Patch,
-  Post,
-  UseGuards,
 } from '@nestjs/common';
 
 import { UserService } from './user.service';

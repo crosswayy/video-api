@@ -7,6 +7,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import ormconfig = require('../ormconfig');
 import { AtGuard } from './auth/common/guards';
 import { APP_GUARD } from '@nestjs/core';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 
 @Module({
   imports: [
@@ -17,6 +19,9 @@ import { APP_GUARD } from '@nestjs/core';
     TypeOrmModule.forRoot({
       ...ormconfig,
       autoLoadEntities: true,
+    }),
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', '..', 'storage'),
     }),
   ],
   controllers: [],
