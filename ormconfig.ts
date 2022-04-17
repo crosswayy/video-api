@@ -4,8 +4,6 @@ import * as dotenv from 'dotenv';
 
 dotenv.config();
 
-console.log(__dirname);
-
 export = {
   type: 'postgres',
   host: process.env.POSTGRES_HOST,

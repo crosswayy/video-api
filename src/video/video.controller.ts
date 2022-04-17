@@ -5,6 +5,7 @@ import {
   Get,
   Param,
   Post,
+  Put,
   Res,
   UploadedFile,
   UseInterceptors,
@@ -32,16 +33,23 @@ export class VideoController {
   }
 
   // Get user video
-  @Public()
+  // @Public()
   @Get(':id')
-  getVideoById(@Res() res, @Param('id') videoId: string) {
-    return this.videoService.getVideoById(res, videoId);
+  getVideoById(
+    @Res() res,
+    @Param('id') videoId: string,
+    @GetCurrentUserId() userId: string,
+  ) {
+    return this.videoService.getVideoById(res, videoId, userId);
   }
 
   // Get user's video properties
   @Get('/properties/:id')
-  getVideoPropsById(@Param('id') videoId: string) {
-    return this.videoService.getVideoPropsById(videoId);
+  getVideoPropsById(
+    @Param('id') videoId: string,
+    @GetCurrentUserId() userId: string,
+  ) {
+    return this.videoService.getVideoPropsById(videoId, userId);
   }
 
   // Upload a video
@@ -74,5 +82,25 @@ export class VideoController {
     @GetCurrentUserId() userId: string,
   ) {
     return this.videoService.deleteVideo(videoId, userId);
+  }
+
+  // Share rights
+  @Put('share/:id')
+  shareRights(
+    @Param('id') videoId: string,
+    @GetCurrentUserId() userId: string,
+    @Body() email: string,
+  ) {
+    return this.videoService.shareRights(videoId, userId, email);
+  }
+
+  // Delete rights
+  @Delete('share/:id')
+  deleteRights(
+    @Param('id') videoId: string,
+    @GetCurrentUserId() userId: string,
+    @Body() email: string,
+  ) {
+    return this.videoService.deleteRights(videoId, userId, email);
   }
 }

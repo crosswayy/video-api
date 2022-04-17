@@ -30,7 +30,6 @@ export class UserService {
       updateInfo.email = dto.email;
     }
 
-    console.log(userId);
     const updatedData = await this.userRepository
       .createQueryBuilder()
       .update(UserEntity)
