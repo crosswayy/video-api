@@ -1,7 +1,12 @@
-import { ForbiddenException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { UserEntity } from '../entities/user.entity';
 import { Repository } from 'typeorm';
-import { CreateVideoDto } from './dto';
+import { CreateVideoDto, RightsDto } from './dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { VideoEntity } from '../entities/video.entity';
 import { join } from 'path';
@@ -23,12 +28,14 @@ export class VideoService {
       .where('user_id = :userId', { userId })
       .getMany();
 
-    if (!videos) throw new ForbiddenException('Videos does not exists');
+    if (!videos.length) throw new NotFoundException('Videos does not exists');
 
     return videos;
   }
 
   async getVideoById(res, videoId, userId) {
+    if (!videoId) throw new BadRequestException('Video id must be given');
+
     const access = await this.getAccess(videoId, userId);
 
     if (!access)
@@ -36,19 +43,21 @@ export class VideoService {
 
     const video = await this.videoRepository.findOne(videoId);
 
-    if (!video) throw new ForbiddenException('Video does not exists');
+    if (!video) throw new NotFoundException('Video does not exists');
 
     return res.sendFile(join(__dirname, `../../../${video.link}`));
   }
 
   async getVideoPropsById(videoId: string, userId: string) {
+    if (!videoId) throw new BadRequestException('Video id must be given');
+
     const access = await this.getAccess(videoId, userId);
     const videoProps = await this.videoRepository.findOne(videoId);
 
     if (!access)
       throw new ForbiddenException('You have not access to this video');
 
-    if (!videoProps) throw new ForbiddenException('Video does not exists');
+    if (!videoProps) throw new NotFoundException('Video does not exists');
 
     return videoProps;
   }
@@ -77,19 +86,21 @@ export class VideoService {
     user: UserEntity,
     dto: UpdateVideoDto,
   ) {
+    if (!videoId) throw new BadRequestException('Video id must be given');
+
     const video = await this.videoRepository
       .createQueryBuilder('video')
       .leftJoinAndSelect('video.user', 'videos')
       .where('video.id = :videoId', { videoId })
       .getOne();
 
-    if (!video) throw new ForbiddenException('Video does not exists');
+    if (!video) throw new NotFoundException('Video does not exists');
 
     if (video['user'].id != user.id)
       throw new ForbiddenException('You have not access to this video');
 
     let updateParams: object = dto;
-
+    console.log({ file });
     if (file) {
       fs.unlink(join(__dirname, `../../../${video['link']}`), (err) => {
         if (err) {
@@ -102,7 +113,7 @@ export class VideoService {
         ...dto,
         link: file.path,
       };
-    }
+    } else delete updateParams['file'];
 
     const updatedVideo = await this.videoRepository
       .createQueryBuilder()
@@ -115,13 +126,15 @@ export class VideoService {
   }
 
   async deleteVideo(videoId: string, userId: string) {
+    if (!videoId) throw new BadRequestException('Video id must be given');
+
     const video = await this.videoRepository
       .createQueryBuilder('video')
       .leftJoinAndSelect('video.user', 'videos')
       .where('video.id = :videoId', { videoId })
       .getOne();
 
-    if (!video) throw new ForbiddenException('Video does not exists');
+    if (!video) throw new NotFoundException('Video does not exists');
 
     if (video['user'].id != userId)
       throw new ForbiddenException('You have not access to this video');
@@ -135,13 +148,12 @@ export class VideoService {
       }
     });
 
-    return {
-      title: video.title,
-      status: 'Deleted',
-    };
+    return video;
   }
 
-  async shareRights(videoId: string, userId: string, email: string) {
+  async shareRights(videoId: string, userId: string, email: RightsDto) {
+    if (!videoId) throw new BadRequestException('Video id must be given');
+
     const video = await this.videoRepository
       .createQueryBuilder('video')
       .leftJoinAndSelect('video.users', 'sharedVideos')
@@ -149,14 +161,14 @@ export class VideoService {
       .where('video.id = :videoId', { videoId })
       .getOne();
 
-    if (!video) throw new ForbiddenException('Video does not exists');
+    if (!video) throw new NotFoundException('Video does not exists');
 
     if (video['user'].id != userId)
       throw new ForbiddenException('You have not access to this video');
 
     const userToShare = await this.userRepository.findOne(email);
 
-    if (!userToShare) throw new ForbiddenException("User didn't found");
+    if (!userToShare) throw new NotFoundException("User didn't found");
 
     video.users.find((user) => {
       if (user.id === userToShare.id)
@@ -174,7 +186,9 @@ export class VideoService {
     };
   }
 
-  async deleteRights(videoId: string, userId: string, email) {
+  async deleteRights(videoId: string, userId: string, email: RightsDto) {
+    if (!videoId) throw new BadRequestException('Video id must be given');
+
     const video = await this.videoRepository
       .createQueryBuilder('video')
       .leftJoinAndSelect('video.users', 'sharedVideos')
@@ -182,7 +196,7 @@ export class VideoService {
       .where('video.id = :videoId', { videoId })
       .getOne();
 
-    if (!video) throw new ForbiddenException('Video does not exists');
+    if (!video) throw new NotFoundException('Video does not exists');
 
     if (video['user'].id != userId)
       throw new ForbiddenException('You have not access to this video');

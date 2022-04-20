@@ -11,7 +11,9 @@ import { UserService } from './user.service';
 import { GetCurrentUser, GetCurrentUserId } from '../auth/common/decorators';
 import { UserEntity } from '../entities/user.entity';
 import { EditUserDto } from './dto';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('user')
 @Controller('user')
 export class UserController {
   constructor(private userService: UserService) {}

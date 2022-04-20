@@ -40,7 +40,7 @@ export class AuthService {
       return tokens;
     } catch (error) {
       if (error instanceof TypeORMError) {
-        throw new ForbiddenException('Credentials already taken');
+        throw new ForbiddenException('Unexpected error');
       }
 
       throw Error();
@@ -51,7 +51,7 @@ export class AuthService {
     // Find user by email
     const user = await this.userRepository.findOne({ email: dto.email });
     // if user does not exist throw exception
-    if (!user) throw new ForbiddenException('Credentials are incorrect');
+    if (!user) throw new ForbiddenException('This user does not exists');
 
     // compare passwords
     const pwMatches = await argon.verify(user.hash, dto.password);
