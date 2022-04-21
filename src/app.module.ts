@@ -6,7 +6,12 @@ import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import ormconfig = require('../ormconfig');
 import { AtGuard } from './auth/common/guards';
-import { APP_GUARD } from '@nestjs/core';
+import { APP_FILTER, APP_GUARD } from '@nestjs/core';
+import { WinstonModule } from 'nest-winston';
+import { format, transports } from 'winston';
+import { AllExceptionsFilter } from './filter/filter';
+import { join } from 'path';
+import 'winston-daily-rotate-file';
 
 @Module({
   imports: [
@@ -18,12 +23,35 @@ import { APP_GUARD } from '@nestjs/core';
       ...ormconfig,
       autoLoadEntities: true,
     }),
+    WinstonModule.forRoot({
+      format: format.combine(
+        format.timestamp(),
+        format.errors({ stack: true }),
+        format.json(),
+      ),
+
+      transports: [
+        new transports.DailyRotateFile({
+          dirname: join(__dirname, 'logs'),
+          filename: 'errors-%DATE%.log',
+          datePattern: 'DD-MM-YYYY',
+          maxSize: '20m',
+          maxFiles: '14d',
+          level: 'error',
+        }),
+        new transports.Console({ level: 'info' }),
+      ],
+    }),
   ],
   controllers: [],
   providers: [
     {
       provide: APP_GUARD,
       useClass: AtGuard,
+    },
+    {
+      provide: APP_FILTER,
+      useClass: AllExceptionsFilter,
     },
   ],
 })

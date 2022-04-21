@@ -6,6 +6,7 @@ import {
   HttpCode,
   HttpStatus,
   Param,
+  ParseUUIDPipe,
   Post,
   Put,
   Res,
@@ -64,7 +65,7 @@ export class VideoController {
   })
   getVideoById(
     @Res() res,
-    @Param('id') videoId: string,
+    @Param('id', new ParseUUIDPipe()) videoId: string,
     @GetCurrentUserId() userId: string,
   ) {
     return this.videoService.getVideoById(res, videoId, userId);
@@ -82,7 +83,7 @@ export class VideoController {
     description: 'You have not access to this video',
   })
   getVideoPropsById(
-    @Param('id') videoId: string,
+    @Param('id', new ParseUUIDPipe()) videoId: string,
     @GetCurrentUserId() userId: string,
   ) {
     return this.videoService.getVideoPropsById(videoId, userId);
@@ -128,7 +129,7 @@ export class VideoController {
     description: 'You have not access to this video',
   })
   updateVideo(
-    @Param('id') videoId: string,
+    @Param('id', new ParseUUIDPipe()) videoId: string,
     @GetCurrentUser() user: UserEntity,
     @Body() dto: UpdateVideoDto,
     @UploadedFile() file?: Express.Multer.File,
@@ -148,7 +149,7 @@ export class VideoController {
     description: 'You have not access to this video',
   })
   deleteVideo(
-    @Param('id') videoId: string,
+    @Param('id', new ParseUUIDPipe()) videoId: string,
     @GetCurrentUserId() userId: string,
   ) {
     return this.videoService.deleteVideo(videoId, userId);
@@ -169,7 +170,7 @@ export class VideoController {
     description: 'You have not access to this video',
   })
   shareRights(
-    @Param('id') videoId: string,
+    @Param('id', new ParseUUIDPipe()) videoId: string,
     @GetCurrentUserId() userId: string,
     @Body() dto: RightsDto,
   ) {
@@ -191,7 +192,7 @@ export class VideoController {
     description: 'You have not access to this video',
   })
   deleteRights(
-    @Param('id') videoId: string,
+    @Param('id', new ParseUUIDPipe()) videoId: string,
     @GetCurrentUserId() userId: string,
     @Body() dto: RightsDto,
   ) {
