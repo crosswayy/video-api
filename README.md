@@ -2,10 +2,6 @@
 <p>
   <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo_text.svg" width="320" alt="Nest Logo" /></a>
 </p>
-<p>
-  <a href="https://innowise-group.com/" target="blank"><img src="https://jobs-innowise.com/api/uploads/Innowise_Group_logo_profile_3fa4b30a39.jpg
-" width="320" alt="Innowise Logo" /></a>
-</p>
 </div>
 
 # NestJS Video service API. Innowise internship
