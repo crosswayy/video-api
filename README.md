@@ -13,6 +13,9 @@ npm db:dev:restart  // start postgres in docker
 npm run start:dev   // start API in dev mode
 ```
 
+Service will be available on port 3000.
+Swagger is also available at http://localhost:3000/swagger/
+
 ### Before starting you need set environment variables creating .env file
 ```
 POSTGRES_VERSION=           // Postgres version
