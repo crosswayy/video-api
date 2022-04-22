@@ -21,10 +21,12 @@ import { UserEntity } from '../entities/user.entity';
 import { CreateVideoDto, FileDto, RightsDto } from './dto';
 import { UpdateVideoDto } from './dto/update-video.dto';
 import {
+  ApiBadRequestResponse,
   ApiBearerAuth,
   ApiBody,
   ApiConsumes,
   ApiForbiddenResponse,
+  ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
   ApiTags,
@@ -45,7 +47,7 @@ export class VideoController {
     description: "User's videos has been got successfully",
     type: [VideoEntity],
   })
-  @ApiForbiddenResponse({
+  @ApiNotFoundResponse({
     description: 'Videos does not exists',
   })
   getUserVideos(@GetCurrentUserId() userId: string): Promise<VideoEntity[]> {
@@ -60,9 +62,11 @@ export class VideoController {
     description: 'Video has been loaded',
     type: FileDto,
   })
+  @ApiBadRequestResponse({ description: 'Video id must be given' })
   @ApiForbiddenResponse({
     description: 'You have not access to this video',
   })
+  @ApiNotFoundResponse({ description: 'Video not found' })
   getVideoById(
     @Res() res,
     @Param('id', new ParseUUIDPipe()) videoId: string,
@@ -79,6 +83,8 @@ export class VideoController {
     description: 'Video properties has been loaded.',
     type: VideoEntity,
   })
+  @ApiBadRequestResponse({ description: 'Video id must be given' })
+  @ApiNotFoundResponse({ description: 'Video not found' })
   @ApiForbiddenResponse({
     description: 'You have not access to this video',
   })
@@ -125,6 +131,8 @@ export class VideoController {
     description: 'Video has been updated',
     type: VideoEntity,
   })
+  @ApiBadRequestResponse({ description: 'Video id must be given' })
+  @ApiNotFoundResponse({ description: 'Video not found' })
   @ApiForbiddenResponse({
     description: 'You have not access to this video',
   })
@@ -145,6 +153,8 @@ export class VideoController {
     description: 'Video has been deleted',
     type: VideoEntity,
   })
+  @ApiBadRequestResponse({ description: 'Video id must be given' })
+  @ApiNotFoundResponse({ description: 'Video not found' })
   @ApiForbiddenResponse({
     description: 'You have not access to this video',
   })
@@ -166,6 +176,8 @@ export class VideoController {
   @ApiOkResponse({
     description: 'Rights has been shared',
   })
+  @ApiBadRequestResponse({ description: 'Video id must be given' })
+  @ApiNotFoundResponse({ description: 'Not found' })
   @ApiForbiddenResponse({
     description: 'You have not access to this video',
   })
@@ -188,6 +200,8 @@ export class VideoController {
   @ApiOkResponse({
     description: 'Rights has been deleted',
   })
+  @ApiBadRequestResponse({ description: 'Video id must be given' })
+  @ApiNotFoundResponse({ description: 'Not found' })
   @ApiForbiddenResponse({
     description: 'You have not access to this video',
   })

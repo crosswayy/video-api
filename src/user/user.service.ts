@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as argon from 'argon2';
@@ -18,6 +18,10 @@ export class UserService {
       hash?: string;
       email?: string;
     };
+
+    const isUsedEmail = await this.userRepository.findOne({ email: dto.email });
+
+    if (isUsedEmail) throw new ForbiddenException('This email is already used');
 
     const updateInfo: UpdateInfo = {};
 
